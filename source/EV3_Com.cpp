@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include "TypeAndDataManager.h"
+
 extern "C" {
 #include "c_com.h"
 #include "c_bt.h"
@@ -38,8 +40,6 @@ enum
   UNKNOWN = 0x80
 };
 }
-
-#include "TypeAndDataManager.h"
 
 using namespace Vireo;
 

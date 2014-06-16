@@ -19,12 +19,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "TypeAndDataManager.h"
+#include "StringUtilities.h"
+
 extern "C" {
 #include "c_sound.h"
 }
-
-#include "TypeAndDataManager.h"
-#include "StringUtilities.h"
 
 using namespace Vireo;
 

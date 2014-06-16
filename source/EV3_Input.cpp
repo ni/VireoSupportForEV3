@@ -20,12 +20,12 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
+#include "TypeAndDataManager.h"
+#include "StringUtilities.h"
+
 extern "C" {
 #include "c_input.h"
 }
-
-#include "TypeAndDataManager.h"
-#include "StringUtilities.h"
 
 using namespace Vireo;
 

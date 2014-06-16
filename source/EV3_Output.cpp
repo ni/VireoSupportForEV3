@@ -19,14 +19,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "TypeAndDataManager.h"
+#include "StringUtilities.h"
+
 extern "C" {
 #include "lms2012.h"
 #include "c_output.h"
 #include "c_daisy.h"
 }
-
-#include "TypeAndDataManager.h"
-#include "StringUtilities.h"
 
 using namespace Vireo;
 

@@ -18,13 +18,13 @@
 
 #include <sys/stat.h>
 
+#include "TypeAndDataManager.h"
+#include "StringUtilities.h"
+
 extern "C" {
 #include "c_memory.h"
 DSPSTAT cMemoryFreeHandle(PRGID PrgId, HANDLER Handle);
 }
-
-#include "TypeAndDataManager.h"
-#include "StringUtilities.h"
 
 using namespace Vireo;
 
