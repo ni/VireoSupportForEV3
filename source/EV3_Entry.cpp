@@ -127,7 +127,7 @@ void VireoInit(void)
 void VireoStep()
 {
     try {
-        ExecutionState state = pShell->TheExecutionContext()->ExecuteSlices(400);
+        Int32 state = EggShell_ExecuteSlices(pShell, 400);
 
         // Store the execution state as a return value and pop off unused parameters.
         PrimParPointer();
