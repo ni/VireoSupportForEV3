@@ -9,7 +9,7 @@ The file `EV3_Entry.cpp` contains functions that enable the firmware to interact
 
 ## Build
  0. Get a (virtual) install of Linux.  We've used Ubuntu 12.04 virtualized with VMware, but other combinations should work.
- 0. Get [Code Sourcery Lite for ARM version 2009q1-203][3], extract it, and add the path to CodeSourcery/Sourcery_G++_Lite/bin to your PATH environment variable.
+ 0. Get [Code Sourcery Lite for ARM version 2009q1-203][3], extract it, and add the path to arm-2009q1/bin to your PATH environment variable.
  0. Get the [LEGO MINDSTORMS EV3 source code - Extended version][1] and specify its location by setting the EV3SOURCES_BASE variable in the [`Makefile`][4]
  0. Get the [VireoSDK][2] source code and specify its location by setting the VIREO_BASE variable in the [`Makefile`][4].
  0. Navigate to the [`build`][5] directory and run `make`.  This process gets the VireoSDK to build the libvireo.so library, compiles source files (which depend on headers from the EV3 source and Vireo), and links into the libvireobridge.so library (which depends on libvireo.so).  If it succeeded, you should find up-to-date libvireo.so and libvireobridge.so libraries in the [`build`][5] directory.
@@ -19,7 +19,7 @@ Copy the libvireo.so and libvireobridge.so libraries to the directory /home/root
 
 [1]: https://github.com/mindboards/ev3sources-xtended
 [2]: https://github.com/ni/VireoSDK
-[3]: https://sourcery.mentor.com/GNUToolchain/release858
+[3]: http://go.mentor.com/2ig4q
 [4]: https://github.com/ni/VireoSupportForEV3/build/Makefile
 [5]: https://github.com/ni/VireoSupportForEV3/build/
 
