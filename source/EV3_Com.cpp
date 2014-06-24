@@ -201,6 +201,26 @@ VIREO_FUNCTION_SIGNATURE3(MailBoxWrite, StringRef, StringRef, TypedArrayCoreRef)
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE2(MailBoxWriteOwn, Int8, TypedArrayCoreRef)
+{
+    Int8 boxNo = _Param(0);
+    TypedArrayCoreRef data = _Param(1);
+    IntIndex length = Min(data->Length(), MAILBOX_CONTENT_SIZE);
+
+    if (OK == ComInstance.MailBox[boxNo].Status)
+    {
+        memcpy((char*)&((DATA8*)(ComInstance.MailBox[boxNo].Content))[0], data->BeginAt(0), length);
+        ComInstance.MailBox[boxNo].DataSize = length;
+
+        if (ComInstance.MailBox[boxNo].WriteCnt == ComInstance.MailBox[boxNo].ReadCnt)
+            ComInstance.MailBox[boxNo].WriteCnt++;
+    }
+
+    SetDispatchStatus(NOBREAK);
+
+    return _NextInstruction();
+}
+
 VIREO_FUNCTION_SIGNATURE2(ComSetOnOff, Int8, Int8)
 {
     Int8 hardware = _Param(0);
@@ -325,7 +345,8 @@ DEFINE_VIREO_BEGIN(EV3_IO)
     DEFINE_VIREO_FUNCTION(MailBoxOpen, "p(i(.Int8),i(.String),i(.Int8))");
     DEFINE_VIREO_FUNCTION(MailBoxClose, "p(i(.Int8))");
     DEFINE_VIREO_FUNCTION(MailBoxRead, "p(i(.Int8),i(.Int8),o(.Array))");
-    DEFINE_VIREO_FUNCTION(MailBoxWrite, "p(i(.String),i(.String),o(.Array))");
+    DEFINE_VIREO_FUNCTION(MailBoxWrite, "p(i(.String),i(.String),i(.Array))");
+    DEFINE_VIREO_FUNCTION(MailBoxWriteOwn, "p(i(.Int8),i(.Array))");
     DEFINE_VIREO_FUNCTION(ComSetOnOff, "p(i(.Int8),i(.Int8))");
     DEFINE_VIREO_FUNCTION(ComSetConnection, "p(i(.Int8),i(.String),i(.Int8))");
     DEFINE_VIREO_FUNCTION(ComGetFavourItem, "p(i(.Int8),i(.Int8),i(.Int8),o(.String),o(.Int8),o(.Int8),o(.Int8))");
