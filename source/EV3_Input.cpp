@@ -25,6 +25,7 @@
 
 extern "C" {
 #include "c_input.h"
+void cInputSetDeviceType(DATA8 Device,DATA8 Type, DATA8 Mode,int Line);
 }
 
 using namespace Vireo;
@@ -93,19 +94,97 @@ VIREO_FUNCTION_SIGNATURE6(InputReadSi, UInt8, UInt8, UInt8, UInt8, UInt8, TypedA
     else
         return _NextInstruction();
 
-    DATA8 device = no + (layer * INPUT_PORTS);
-    cInputSetType(device, type, mode, __LINE__);
     data->Resize1D(count);
 
-    for (UInt8 i = 0; i < count; i++)
-    {
-        if (device < DEVICES)
-            *(Single *) data->BeginAt(i) = cInputReadDeviceSi(device,i,0,NULL);
+    DATA8 device = no + (layer * INPUT_PORTS);
+    DATA8 value = 0;
+    DATA8 busy = 0;
+    OBJID owner = CallingObjectId();
+
+    if (device < DEVICES)
+    { // Device valid
+
+        if ((InputInstance.DeviceData[device].Connection != CONN_NONE) && (InputInstance.DeviceData[device].Connection != CONN_ERROR))
+        { // Device present
+
+            if (type == TYPE_KEEP)
+            { // Get actual type
+
+                type  =  InputInstance.DeviceType[device];
+            }
+            if (mode == MODE_KEEP)
+            { // Get actual mode
+
+                mode  =  InputInstance.DeviceMode[device];
+            }
+            if (InputInstance.DeviceData[device].Busy == 0)
+            {
+                if ((InputInstance.DeviceType[device] != type) || (InputInstance.DeviceMode[device] != mode))
+                { // Must change type or mode so check if owner is OK
+
+                    if ((InputInstance.DeviceData[device].Owner == 0) || (InputInstance.DeviceData[device].Owner == owner))
+                    { // Owner is OK
+
+                        InputInstance.DeviceData[device].Owner  =  owner;
+                        cInputSetDeviceType(device,type,mode,__LINE__);
+                        InputInstance.DeviceData[device].TimeoutTimer  =  MAX_DEVICE_BUSY_TIME;
+                        InputInstance.DeviceData[device].Busy   =  0;
+                    }
+                    else
+                    { // Another owner
+
+                        busy  =  1;
+                    }
+                }
+            }
+            if (busy == 0)
+            {
+                if (InputInstance.DeviceData[device].DevStatus == BUSY)
+                {
+                    busy  =  1;
+
+                    if (InputInstance.DeviceData[device].Busy == 0)
+                    {
+                        InputInstance.DeviceData[device].TimeoutTimer  =  MAX_DEVICE_BUSY_TIME;
+                        InputInstance.DeviceData[device].Busy  =  1;
+                    }
+                    else
+                    {
+                        if (InputInstance.DeviceData[device].TimeoutTimer == 0)
+                        {
+                            InputInstance.DeviceData[device].Owner  =  0;
+                            InputInstance.DeviceData[device].Busy   =  0;
+                            busy  =  0;
+                        }
+                    }
+                }
+                else
+                {
+                    while ((value < count) && (value < MAX_DEVICE_DATASETS))
+                    {
+                        *(Single *) data->BeginAt(value) = (DATAF)cInputReadDeviceSi(device,value,0,NULL);
+                        value++;
+                    }
+                }
+
+            }
+        }
         else
-            *(Single *) data->BeginAt(i) = DATA32_NAN;
+        {
+            SetInstructions(0);
+        }
+
+        if (InputInstance.DeviceData[device].DevStatus != BUSY)
+        {
+            InputInstance.DeviceData[device].Owner  =  0;
+            InputInstance.DeviceData[device].Busy   =  0;
+        }
     }
 
-    return _NextInstruction();
+    if (busy)
+        return _this;
+    else
+        return _NextInstruction();
 }
 
 VIREO_FUNCTION_SIGNATURE4(InputReadRaw, UInt8, UInt8, UInt8, TypedArrayCoreRef)
